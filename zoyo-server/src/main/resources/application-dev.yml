@@ -11,16 +11,6 @@ spring:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
       time-between-eviction-runs-millis: 300000
-  # data:
-  #    mongodb:
-  #      # 登录用户所在的数据库，身份验证
-  #      authentication-database: zy-mongo
-  #      host: localhost
-  #      port: 27017
-  #      username: "zyx"
-  #      password: "zyx"
-  #      # 指定使用的数据库，不必预先创建，默认会自动创建test数据库
-  #      database: zy-mongo
   redis:
     host: 127.0.0.1
     port: 8909
