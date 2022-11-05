@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoyo.web.mapper.AudioSubscribeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zoyo.common.po.AudioSubscribeEntity">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="feed_id" property="feedId"/>
+        <result column="status" property="status"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <resultMap id="resultMap" type="com.zoyo.common.po.AudioSubscribeEntity">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="feed_id" property="feedId"/>
+    </resultMap>
+
+    <!-- 用户订阅查询映射结果 -->
+    <resultMap id="wayResultMap" type="com.zoyo.common.po.UserSubscribe">
+        <result column="user_id" property="userId"/>
+        <collection property="lists" ofType="java.lang.String"
+                    javaType="java.util.ArrayList">
+            <result column="feed_id"/>
+        </collection>
+    </resultMap>
+
+    <!--    <collection property="lists" ofType="com.zoyo.common.vo.PodcastSummary"-->
+    <!--                javaType="java.util.ArrayList">-->
+    <!--        <result column="feed_id" property="feedId"/>-->
+    <!--    </collection>-->
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , user_id, feed_id, status, deleted, create_by, create_time, update_by, update_time, remark
+    </sql>
+
+    <select id="getUsersSubscribeInfo" resultType="com.zoyo.common.po.UserSubscribe"
+            resultMap="wayResultMap">
+        SELECT user_id,feed_id
+        FROM zy_audio_subscribe
+        <where>
+            user_id in
+            <foreach collection="list" item="item" separator="," open="(" close=")" index="">
+                #{item.userId}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="getSingleUserSubscribeInfo" resultType="com.zoyo.common.po.UserSubscribe"
+            resultMap="wayResultMap">
+        SELECT user_id,feed_id
+        FROM zy_audio_subscribe
+        <where>
+            user_id = #{userId}
+        </where>
+    </select>
+
+</mapper>

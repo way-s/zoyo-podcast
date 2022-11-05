@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoyo.web.mapper.AudioInboxMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zoyo.common.po.AudioInboxEntity">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="sub_id" property="subId"/>
+        <result column="finish" property="finish"/>
+        <result column="collect" property="collect"/>
+        <result column="in_queue" property="inQueue"/>
+        <result column="status" property="status"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , user_id, sub_id, finish, collect, in_queue, status, deleted, create_by, create_time, update_by, update_time, remark
+    </sql>
+
+    <insert id="insertBatchByItemId" parameterType="java.lang.String">
+        INSERT
+        IGNORE INTO zy_audio_inbox (
+        user_id, sub_id
+        )
+        VALUES
+        <foreach collection="list" item="item" separator="," index="index">
+            #{userId},
+            #{item}
+        </foreach>
+    </insert>
+
+    <insert id="insertBatchByEntity" parameterType="com.zoyo.common.po.AudioInboxEntity">
+        INSERT
+        IGNORE INTO zy_audio_inbox
+        (
+        id , user_id, sub_id, finish, collect, in_queue,
+        status, deleted, create_by, create_time, update_by, update_time,
+        remark
+        )
+        VALUES
+        <foreach collection="list" item="item" separator="," index="index">
+            (
+            #{item.id},
+            #{item.userId},
+            #{item.subId},
+            #{item.finish},
+            #{item.collect},
+            #{item.inQueue},
+            #{item.status},
+            #{item.deleted},
+            #{item.createBy},
+            #{item.createTime},
+            #{item.updateBy},
+            #{item.updateBy},
+            #{item.remark}
+            )
+        </foreach>
+    </insert>
+    <select id="selectNewEnvelopeByUserId" resultType="com.zoyo.common.po.NewEnvelopeEntity">
+        SELECT a.id,
+               a.sub_id,
+               a.finish,
+               a.collect,
+               a.in_queue,
+               b.title,
+               b.subtitle,
+               b.image,
+               b.author,
+               b.audio_type,
+               b.description,
+               b.description_type,
+               b.episode,
+               b.pub_date,
+               b.duration,
+               b.explicit,
+               b.audio_url,
+               b.resource_link
+        FROM zy_audio_inbox a
+                 LEFT JOIN zy_audio_item_house b ON a.sub_id = b.id
+        WHERE (b.duration IS NOT NULL)
+          AND (b.author IS NOT NULL)
+          AND a.user_id = #{userId}
+        ORDER BY a.create_time DESC
+    </select>
+
+    <select id="selectPlayListByUserId" resultType="com.zoyo.common.po.NewEnvelopeEntity">
+        SELECT a.id,
+               a.sub_id,
+               a.finish,
+               a.collect,
+               a.in_queue,
+               b.title,
+               b.subtitle,
+               b.image,
+               b.author,
+               b.audio_type,
+               b.description,
+               b.description_type,
+               b.episode,
+               b.pub_date,
+               b.duration,
+               b.explicit,
+               b.audio_url,
+               b.resource_link
+        FROM ( zy_audio_inbox a RIGHT JOIN zy_audio_playlist c ON c.part_id = a.id )
+                 LEFT JOIN zy_audio_item_house b ON a.sub_id = b.id
+        WHERE (b.duration IS NOT NULL)
+          AND (b.author IS NOT NULL)
+          AND a.user_id = #{userId}
+          AND a.in_queue = 1
+        ORDER BY c.create_time DESC
+    </select>
+
+    <select id="selectCollectListByUserId" resultType="com.zoyo.common.po.NewEnvelopeEntity">
+        SELECT a.id,
+               a.sub_id,
+               a.finish,
+               a.collect,
+               a.in_queue,
+               b.title,
+               b.subtitle,
+               b.image,
+               b.author,
+               b.audio_type,
+               b.description,
+               b.description_type,
+               b.episode,
+               b.pub_date,
+               b.duration,
+               b.explicit,
+               b.audio_url,
+               b.resource_link
+        FROM zy_audio_inbox a
+                 LEFT JOIN zy_audio_item_house b ON a.sub_id = b.id
+        WHERE (b.duration IS NOT NULL)
+          AND (b.author IS NOT NULL)
+          AND a.user_id = #{userId}
+          AND a.collect = 1
+        ORDER BY a.create_time DESC
+    </select>
+
+    <!--参考-->
+    <!--    <select id="getSingleUserSubscribeInfo" resultType="com.zoyo.common.po.UserSubscribe"-->
+    <!--            resultMap="wayResultMap">-->
+    <!--        SELECT user_id,feed_id-->
+    <!--        FROM zy_audio_subscribe-->
+    <!--        <where>-->
+    <!--            user_id = #{userId}-->
+    <!--        </where>-->
+    <!--    </select>-->
+
+</mapper>

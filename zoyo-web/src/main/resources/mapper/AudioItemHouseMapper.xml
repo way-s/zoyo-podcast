@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoyo.web.mapper.AudioItemHouseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zoyo.common.po.AudioItemHouseEntity">
+        <id column="id" property="id"/>
+        <result column="feed_id" property="feedId"/>
+        <result column="program_id" property="programId"/>
+        <result column="title" property="title"/>
+        <result column="subtitle" property="subtitle"/>
+        <result column="image" property="image"/>
+        <result column="author" property="author"/>
+        <result column="audio_type" property="audioType"/>
+        <result column="description" property="description"/>
+        <result column="description_type" property="descriptionType"/>
+        <result column="episode" property="episode"/>
+        <result column="pub_date" property="pubDate"/>
+        <result column="duration" property="duration"/>
+        <result column="explicit" property="explicit"/>
+        <result column="audio_url" property="audioUrl"/>
+        <result column="resource_link" property="resourceLink"/>
+        <result column="status" property="status"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , feed_id, program_id, title, subtitle, image, author, audio_type, description, description_type, episode, pub_date, duration, explicit, audio_url, resource_link, status, deleted, create_by, create_time, update_by, update_time, remark
+    </sql>
+
+    <insert id="insertBatch" parameterType="com.zoyo.common.po.AudioItemHouseEntity">
+        INSERT
+        IGNORE INTO zy_audio_item_house (
+        id , feed_id, program_id, title, subtitle, image, author, audio_type, description, description_type, episode,
+        pub_date, duration, explicit, audio_url, resource_link,
+        status, deleted,
+        create_by, create_time, update_by,
+        update_time, remark
+        )
+        VALUES
+        <foreach collection="list" item="item" separator="," index="index">
+            (
+            #{item.id,jdbcType=BIGINT},
+            #{item.feedId,jdbcType=VARCHAR},
+            #{item.programId,jdbcType=VARCHAR},
+            #{item.title,jdbcType=VARCHAR},
+            #{item.subtitle,jdbcType=VARCHAR},
+            #{item.image,jdbcType=VARCHAR},
+            #{item.author,jdbcType=VARCHAR},
+            #{item.audioType,jdbcType=VARCHAR},
+            #{item.description,jdbcType=VARCHAR},
+            #{item.descriptionType,jdbcType=VARCHAR},
+            #{item.episode,jdbcType=VARCHAR},
+            #{item.pubDate,jdbcType=TIMESTAMP},
+            #{item.duration,jdbcType=VARCHAR},
+            #{item.explicit,jdbcType=VARCHAR},
+            #{item.audioUrl,jdbcType=VARCHAR},
+            #{item.resourceLink,jdbcType=VARCHAR},
+            #{item.status,jdbcType=TINYINT},
+            #{item.deleted,jdbcType=TINYINT},
+            #{item.createBy,jdbcType=TIMESTAMP},
+            #{item.createTime,jdbcType=VARCHAR},
+            #{item.updateBy,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=VARCHAR},
+            #{item.remark,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+
+</mapper>

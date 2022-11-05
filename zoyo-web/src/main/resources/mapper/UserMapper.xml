@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoyo.web.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zoyo.common.po.UserEntity">
+        <id column="id" property="id"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="account" property="account"/>
+        <result column="password" property="password"/>
+        <result column="phonenumber" property="phonenumber"/>
+        <result column="email" property="email"/>
+        <result column="gender" property="gender"/>
+        <result column="avatar" property="avatar"/>
+        <result column="address" property="address"/>
+        <result column="status" property="status"/>
+        <result column="deleted" property="deleted"/>
+        <result column="login_ip" property="loginIp"/>
+        <result column="login_date" property="loginDate"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , nick_name, account, password, phonenumber, email, gender, avatar, address, status, deleted, login_ip, login_date, create_by, create_time, update_by, update_time, remark
+    </sql>
+
+</mapper>
