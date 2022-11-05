@@ -7,9 +7,9 @@
 
 ## 项目演示
 
-前端项目
+[前端项目](https://github.com/way-s/zoyo-web)
 
-启动地址：http://localhost:8080/into
+前端启动地址：http://localhost:8080/
 
 1. 登录页
    1. 地址：http://localhost:8080/into
