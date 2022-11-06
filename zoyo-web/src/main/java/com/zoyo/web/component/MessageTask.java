@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * @Author: mxx
- * @Description:
+ * @Description: 新消息发送通知
  */
 @Slf4j
 @Component

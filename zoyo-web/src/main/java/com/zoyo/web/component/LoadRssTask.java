@@ -5,10 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.rometools.rome.feed.synd.SyndFeed;
-import com.zoyo.common.bo.AudioFeedBasicInfo;
-import com.zoyo.common.bo.AudioSubscribeBo;
-import com.zoyo.common.bo.AudioSyndContent;
-import com.zoyo.common.bo.AudioSyndFeed;
+import com.zoyo.common.bo.*;
 import com.zoyo.common.constant.RedisConstant;
 import com.zoyo.common.po.AudioItemHouseEntity;
 import com.zoyo.common.po.AudioRssEntity;
@@ -22,7 +19,9 @@ import com.zoyo.web.util.EncryptionUtil;
 import com.zoyo.web.util.ParsePodcastRssUtil;
 import com.zoyo.web.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -63,6 +62,8 @@ public class LoadRssTask {
     @Resource
     private ParsePodcastRssUtil podcastRssUtil;
 
+    @Autowired
+    private CronConfigure cronConfigure;
 
     /**
      * 将用户订阅加载到 redis缓存中
@@ -72,7 +73,9 @@ public class LoadRssTask {
 //    @PostConstruct
     @Async(value = "tPool1")
 //    @Scheduled(initialDelay = 1000 * 2, fixedDelay = 1000 * 60 * 9, zone = "GMT-8:00")
+    @Scheduled(initialDelayString = "#{cronConfigure.initialDelay2s}", fixedDelayString = "#{cronConfigure.fixedDelay10Min}", zone = "#{cronConfigure.zone}")
     public void loadSubscribeIntoRedis() {
+        log.info("loadSubscribeIntoRedis方法开始运行");
         // 取数据库中所有的rss订阅
         List<AudioRssEntity> audioSubscribeEntities = audioRssMapper.selectList(new LambdaQueryWrapper<AudioRssEntity>()
                 .select(AudioRssEntity::getFeedId, AudioRssEntity::getOwnerName,
@@ -84,7 +87,7 @@ public class LoadRssTask {
         List<AudioSubscribeBo> audioSubscribeBos = Convert.toList(AudioSubscribeBo.class,
                 audioSubscribeEntities);
         redisUtil.set(RedisConstant.SUBSCRIBE_RSS, audioSubscribeBos);
-        log.info("完成订阅更新，时间为 :{}", DateUtil.now());
+        log.info("loadSubscribeIntoRedis方法完成订阅更新，时间为 :{}", DateUtil.now());
     }
 
     /**
@@ -92,8 +95,10 @@ public class LoadRssTask {
      */
 //    @Async(value = "tPool1")
 //    @Scheduled(initialDelay = 1000 * 3, fixedDelay = 1000 * 60 * 10, zone = "GMT-8:00")
+    @Scheduled(cron = "#{cronConfigure.tenMinApart}", zone = "#{cronConfigure.zone}")
     public void loadPodcastIntoRedis() {
         try {
+            log.info("loadPodcastIntoRedis方法开始运行");
             Object obj = redisUtil.get(RedisConstant.SUBSCRIBE_RSS);
             List<AudioSubscribeBo> list = Convert.toList(AudioSubscribeBo.class, obj);
             log.info("Subscribe Podcast count :{}", list.size());
@@ -125,8 +130,7 @@ public class LoadRssTask {
                 }
             }
         } catch (Exception e) {
-            log.error("loadPodcastIntoRedis error :{}", e.getMessage());
-            e.printStackTrace();
+            log.error("loadPodcastIntoRedis方法error :", e);
         }
 //        itemInfoWriteInWarehouse();
     }
@@ -136,7 +140,9 @@ public class LoadRssTask {
      */
     @Async(value = "tPool1")
 //    @Scheduled(initialDelay = 1000 * 2, fixedDelay = 1000 * 60 * 10, zone = "GMT-8:00")
+//    @Scheduled(cron = "#{cronConfigure.sixMinApart}", zone = "#{cronConfigure.zone}")
     public void updateUserSubscribeInfo() {
+        log.info("updateUserSubscribeInfo方法开始运行");
         // 获取所有用户订阅
         List<AudioSubscribeEntity> userList = subscribeMapper.selectList(new LambdaQueryWrapper<AudioSubscribeEntity>()
                 .select(AudioSubscribeEntity::getUserId)
@@ -145,7 +151,7 @@ public class LoadRssTask {
         );
         // 获取每个用户的订阅数据
         List<UserSubscribe> feedIds = subscribeMapper.getUsersSubscribeInfo(userList);
-        log.info("infos.size :{}", feedIds.size());
+        log.info("updateUserSubscribeInfo方法，infos.size :{}", feedIds.size());
         setUserSubscribeInfoToRedis(feedIds);
     }
 
@@ -156,7 +162,7 @@ public class LoadRssTask {
     public void updateSubscribeInfoById(Long userId) {
         // 获取用户的订阅数据
         List<UserSubscribe> feedIds = subscribeMapper.getSingleUserSubscribeInfo(userId);
-        log.info("infos.size :{}", feedIds.size());
+        log.info("updateSubscribeInfoById方法，infos.size :{}", feedIds.size());
         setUserSubscribeInfoToRedis(feedIds);
     }
 
