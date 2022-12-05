@@ -53,18 +53,6 @@ public class GlobalExceptionHandler {
         return exceptionCommonMethod(e);
     }
 
-    /**
-     * 处理空指针的异常
-     *
-     * @param e Exception
-     * @return Result
-     */
-    @ExceptionHandler(value = Exception.class)
-    public Result<Object> exceptionHandler(Exception e) {
-        log.error("处理异常，原因是，{},{}", e.getMessage(), e);
-        return Result.fail();
-    }
-
     private Result<Object> exceptionCommonMethod(BindException e) {
         BindingResult bindingResult = e.getBindingResult();
         String msg = null;
